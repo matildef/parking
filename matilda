@@ -1,0 +1,630 @@
+package matildaparking;
+import javax.swing.*;
+import java.util.*;
+
+/**
+ *
+ * @author matilda
+ */
+public class MatildaParking 
+{
+    public static void main(String[] args) 
+    {
+        Vector<String> mat=new Vector();
+        Vector<Date> fEntrada=new Vector();
+        Vector<Date> fSalida=new Vector();
+        Vector<String> color=new Vector();
+        Vector<String> Nick=new Vector();
+        Vector<String> contra=new Vector();
+        Vector<Integer> nivel=new Vector();
+        String A="Admin";
+        String c="1234";
+        int niv=0;
+        int n,o1,o2,o3,o4;
+        float pMin=(float)0.01;
+        String[] op1={"Registrar entrada","Salida","Estadísticas","Usuarios","Configuracion de precio por minuto","Salir"};
+        String[] op2={"Mostrar todos los datos","Uso del parking por día de semana","Estacionamiento por colores entre fechas","Atrás"};
+        String[] op3={"Gestión de usuarios","Cambio de usuario","atrás"};
+        String[] op4={"Alta de usuario","Baja de usuario","Modificar contraseña","Modificar nivel","Atrás"};
+        Nick.add(A);
+        contra.add(c);
+        nivel.add(niv);
+        
+        n=contrasenia(Nick,contra);
+        if(n!=-1)
+        {
+            do
+            {
+            o1=menu("Parking 1.0","User: "+Nick.elementAt(n)+
+                    " Nivel: "+nivel.elementAt(n),op1);
+            switch(o1)
+            {
+                case 0: 
+                    registrar(mat,fEntrada,fSalida,color);
+                    break;
+                case 1:
+                    salida(mat,fSalida);
+                    break;
+                case 2:
+                    if(nivel.elementAt(n)==0) 
+                    {
+                        do
+                        {
+                        o2=menu("Menu","Estadísticas",op2);
+                        switch(o2)
+                        {
+                            case 0:
+                                mostrarTodos(mat,fEntrada,fSalida,color);
+                                break;
+                            case 1:
+                                estac(fEntrada); //dias de semana
+                                break;
+                            case 2:
+                                porColores(fEntrada,color);
+                                break;
+                            case 3: break;
+                        }
+                        }while(o2!=3);
+                    }
+                    break;
+                case 3:
+                    do
+                    {
+                    o3=menu("User","Mantenimiento de usuarios",op3);
+                    switch(o3)
+                    {
+                        case 0:
+                            do
+                            {
+                            o4=menu("User","Gestion de usuarios",op4);
+                            switch(o4)
+                            {
+                                case 0:
+                                    alta(Nick,contra,nivel);
+                                    break;
+                                case 1:
+                                    baja(Nick,contra,nivel);
+                                    break;
+                                case 2:
+                                    modContra(Nick,contra);
+                                    break;
+                                case 3:
+                                    modNivel(Nick,nivel);
+                                    break;
+                                case 4: break;
+                            }
+                            }while(o4!=4);
+                            break;
+                        case 1:
+                            n=contrasenia(Nick,contra);
+                            break;
+                        case 2: break;
+                    }
+                    }while(o3!=2);
+                    break;
+                case 4:
+                    mostrarDatos("Precio actual",
+                            "El precio por minuto actual es de "+pMin+"€");
+                    pMin=leerFloat("Nuevo precio",
+                            "Introducir nuevo precio por minuto");
+                    break;
+                case 5: 
+                    System.exit(0); 
+                    break;
+            }
+            }while(true);
+        }
+        else System.exit(0);
+    }
+    /*****************************************/
+    public static void estac(Vector<Date> fe)
+    {
+        int l=0,m=0,x=0,j=0,v=0,s=0,d=0;
+        int cont=0;
+        
+        for(int i=0;i<fe.size();i++)
+        {
+            if(fe.elementAt(i).getDay()==0) d++;
+            else if(fe.elementAt(i).getDay()==1) l++;
+            else if(fe.elementAt(i).getDay()==2) m++;
+            else if(fe.elementAt(i).getDay()==3) x++;
+            else if(fe.elementAt(i).getDay()==4) j++;
+            else if(fe.elementAt(i).getDay()==5) v++;
+            else s++;
+            cont++;
+        }
+        String salida="Lunes: "+((l/cont)*100)+"%"+'\n'+"Martes: "+((m/cont)*100)+"%"+
+                '\n'+"Miércoles: "+((x/cont)*100)+"%"+'\n'+"Jueves: "+((j/cont)*100)+
+                "%"+'\n'+"Viernes: "+((v/cont)*100)+"%"+'\n'+"Sabado: "+((s/cont)*100)+"%"+
+                '\n'+"Domingo: "+((d/cont)*100)+"%";
+        mostrarDatos("Estacionamiento por días",salida);
+    }
+    /****************************************/
+    public static void porColores(Vector<Date> fe,Vector<String> co)
+    {
+        int total=0,d,m,a,i,n=0,b=0,r=0,az=0,g=0,am=0,o=0;
+        Date f2,f3,f1;
+        
+        do
+        {
+        d=leerEntero("Dia de inicio","Introducir dia de la fecha de inicio");
+        }while(d<1 || d>31);
+        do
+        {
+        m=leerEntero("Mes de inicio","Introducir mes de la fecha de inicio");    
+        }while(m<1 && m>12);
+        do
+        {
+        a=leerEntero("Año de inicio","Introducir año de la fecha de inicio");    
+        }while(a<2010);
+        
+        f2=new Date(a-1900,m-1,d);
+        
+        do
+        {
+        d=leerEntero("Dia de inicio","Introducir dia de la fecha de inicio");
+        }while(d<1 || d>31);
+        do
+        {
+        m=leerEntero("Mes de inicio","Introducir mes de la fecha de inicio");    
+        }while(m<1 && m>12);
+        do
+        {
+        a=leerEntero("Año de inicio","Introducir año de la fecha de inicio");    
+        }while(a<2010);
+        
+        f3=new Date(a-1900,m-1,d);
+        
+        for(i=0;i<fe.size();i++)
+        {
+            if(fecha(fe.elementAt(i),f2,f3))
+            {
+              total++;
+              if(co.elementAt(i).compareTo("Negro")==0) n++;
+              else if(co.elementAt(i).compareTo("Blanco")==0) b++;
+              else if(co.elementAt(i).compareTo("Rojo")==0) r++;
+              else if(co.elementAt(i).compareTo("Azul")==0) az++;
+              else if(co.elementAt(i).compareTo("Gris")==0) g++;
+              else if(co.elementAt(i).compareTo("Amarillo")==0) am++;
+              else o++;
+            }
+        }
+        String salida="Negro: "+(float)((n/total)*100)+"%"+'\n'+
+                "Blanco: "+(float)((b/total)*100)+"%"+'\n'+
+                "Rojo: "+(float)((r/total)*100)+"%"+'\n'+
+                "Azul: "+(float)((az/total)*100)+"%"+'\n'+
+                "Gris: "+(float)((g/total)*100)+"%"+'\n'+
+                "Amarillo: "+(float)((am/total)*100)+"%"+'\n'+
+                "Otro color: "+(float)((o/total)*100)+"%";
+        mostrarDatos("Estadísticas por colores entre fechas",salida);
+    }
+    /****************************************/
+    public static boolean fecha(Date f1,Date f2,Date f3)
+    {
+        if(f1.compareTo(f2)>=0 && f1.compareTo(f3)<=0) return true;
+        return false;
+    }
+    /****************************************/
+    public static void mostrarTodos(Vector<String> m,Vector<Date> fe,Vector<Date> fs,Vector<String> c)
+    {
+       String datos=new String();
+       
+       for(int i=0;i<m.size();i++)
+           datos=datos+"Estacionamiento nº "+(i+1)+" | "+"Matrícula: "+m.elementAt(i)+
+                   " | "+"Fecha entrada: "+fe.elementAt(i)+" | "+"Fecha salida: "+
+                   fs.elementAt(i)+" | "+"Color: "+c.elementAt(i);
+       
+       mostrarDatos("Datos",datos);
+     }
+    /****************************************/
+    public static void alta(Vector<String> n,Vector<String> c,Vector<Integer> ni)
+    {
+       String usuario;
+       String contrasenia;
+       int opcion,nivel,i;
+     
+       usuario=leerCadena("Usuario","Introduzca el usuario");
+       i=buscarUsuario(n,usuario);
+       if(i==-1)
+       {
+       do
+       {
+       contrasenia=pedirContra("Introducir contrasenia");  
+       }while(contrasenia==null || contrasenia.isEmpty());
+       
+       nivel=leerEntero("Nivel","Introducir el nivel(0/1) ");
+       if(!(nivel==0 || nivel==1)) aviso("Error",
+               "Debes introducir 0 o 1");
+       else
+       {
+       opcion=confirmar("¿Desea dar de alta?");
+           if(opcion==0)
+           {
+               n.add(usuario);
+               c.add(contrasenia);
+               ni.add(nivel);
+           }
+       }
+       }
+       else aviso("Usuario encontrado","El usuario existe");
+    }
+    /*******************************/
+    public static void baja(Vector<String> n,Vector<String>c,Vector<Integer> ni)
+    {
+       String usuario;
+       int opcion,i;
+     
+       usuario=leerCadena("Usuario","Introduzca el usuario");
+       i=buscarUsuario(n,usuario);
+       if(i!=-1)
+       {
+       opcion=confirmar("Se va a eliminar el usuario "+usuario+ 
+               " con nivel "+ni.elementAt(i)+". ¿Desea darlo de baja?");
+           if(opcion==0)
+           {         
+            n.remove(i);
+            c.remove(i);
+            ni.remove(i);
+           }
+       }
+       else mostrarDatos("Usuario","El usuario no existe");
+    }
+    /***********************************/
+     public static void modContra(Vector<String> n,Vector<String>c)
+     {
+         String usuario,contraModifica,nuevaContra;
+         int opcion,i;
+         
+         usuario=leerCadena("Usuario",
+                 "Introduzca el usuario del que desea"+'\n'+
+                         "modificar su contraseña");
+         i=buscarUsuario(n,usuario);
+         if(i!=-1)
+         {
+             contraModifica=c.elementAt(i);
+             do
+             {
+             nuevaContra=pedirContra("Introducir nueva contraseña");
+             }while(nuevaContra==null || nuevaContra.isEmpty() || 
+                     contraModifica.equals(nuevaContra));
+             opcion=confirmar("¿Desea modificar la contraseña?");
+             if(opcion==0) c.set(i,nuevaContra);
+         }
+         else aviso("Usuario","El usuario no existe");
+     }
+     /***********************************/
+     public static void modNivel(Vector<String> n,Vector<Integer>ni)
+     {
+         String usuario;
+         int opcion;
+         int i,nivelNuevo,nivelModifica;
+         
+         usuario=leerCadena("Usuario",
+                 "Introduzca el usuario del que desea modificar su nivel");
+         i=buscarUsuario(n,usuario);
+         if(i!=-1)
+         {
+             nivelModifica=ni.elementAt(i);
+             do
+             {
+             nivelNuevo=leerEntero("Nivel","Introducir nuevo nivel");
+             }while(nivelModifica==nivelNuevo);
+             opcion=confirmar("¿Desea modificar el nivel?");
+             if(opcion==0) ni.set(i,nivelNuevo);
+         }
+         else aviso("Usuario","El usuario no existe");
+     }
+     /***********************************/
+    public static int leerEntero(String titulo,String texto)
+    {
+        JFrame frame=new JFrame();
+        String aDevolver=new String();
+        int entero=0;
+        
+        do
+        {
+            aDevolver=JOptionPane.showInputDialog(frame,texto,titulo,JOptionPane.QUESTION_MESSAGE);
+            try
+            {
+            if(aDevolver.isEmpty()) JOptionPane.showMessageDialog(frame,"Debe introducir un valor.","Campo vacío",
+                                                                 JOptionPane.WARNING_MESSAGE);
+            else
+            {
+            entero=Integer.parseInt(aDevolver);
+            break;
+            }
+            }catch(NumberFormatException e)
+            {JOptionPane.showMessageDialog(frame,"No ha introducido un número entero.","Datos de entrada incorrectos",
+                                          JOptionPane.WARNING_MESSAGE);}
+            catch(NullPointerException e)
+            {JOptionPane.showMessageDialog(frame,"Debe introducir un valor.","Campo vacío",
+                                          JOptionPane.INFORMATION_MESSAGE);}
+        }while(true);
+        return entero;
+    }
+    /*****************************************/
+    public static String pedirContra(String cabecera)
+     {
+          String pas,psswd,psswd2; 
+          
+          char[] pass;
+          char[] pass2;
+
+          JPanel panel = new JPanel();//Declaramos interfaz gráfica
+
+          JLabel etiqueta1 = new JLabel("Contraseña: ");
+          JLabel etiqueta2 = new JLabel("Repetir contraseña: ");//Declaramos etiquetas
+          JPasswordField password1 = new JPasswordField(10);//Declaramos campo de pswd
+          JPasswordField password2 = new JPasswordField(10);
+      
+          /*********pintamos la ventana*******/
+          panel.add(etiqueta1);
+          panel.add(password1);
+          panel.add(etiqueta2);
+          panel.add(password2);
+          /***********************************/
+          String[] opciones = new String[]{"Aceptar", "Cancelar"}; //Botones
+          String titulo=new String(cabecera);
+          
+          do
+          {
+          int opcion = JOptionPane.showOptionDialog(null, panel,titulo,
+                   JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                   null, opciones, opciones[0]);
+
+          if(opcion == 0) // Al pulsar Aceptar...
+          {
+          pass = password1.getPassword(); //Aqui tenemos el password metido
+          pass2=password2.getPassword();
+          psswd = new String(pass); //Pasamos a String el password
+          psswd2=new String(pass2);
+        
+          if(psswd.equals(psswd2)) break;
+          else if(psswd.isEmpty() || psswd2.isEmpty()) mostrarDatos("Error",
+                  "Introduzca contraseña");
+          else mostrarDatos("Error","No coinciden las contraseñas");
+          }
+          }while(true);
+          if(psswd.equals(psswd2)) return psswd;
+          return null; //le da a cancelar
+     }
+     /***********************************/
+    public static int buscarUsuario(Vector<String> n,String usu)
+    {
+        int i;
+        for(i=0;i<n.size();i++)
+            if(n.elementAt(i).compareTo(usu)==0) return i;
+        
+        return -1;
+    }
+    /*****************************************/
+    public static void registrar(Vector<String> m,Vector<Date> fe,Vector<Date> fS,Vector<String> co)
+    {
+        String matricula=new String();
+        Date f=new Date();
+        String color=new String();
+        String[] colores={"Negro","Blanco","Rojo","Azul","Gris","Amarillo","Otro"};
+        int i,opc;
+        
+        matricula=leerCadena("Matricula","Introducir matrícula");
+        i=buscarMatricula(m,matricula,fS);
+        if(i==-1) 
+        {
+            color=introducirColor("color","Introducir color del coche",colores);
+            opc=confirmar("¿Entrar al parking?");
+            if(opc==0)
+            {
+                m.add(matricula);
+                fe.add(new Date());
+                fS.add(null);
+                co.add(color);
+            }
+        }
+        else aviso("Coche",
+                "El coche sigue dentro del parking");
+    }
+    /****************************************/
+    public static String introducirColor(String titulo,String texto,String[] opc)
+    {
+        JPanel panel=new JPanel();
+        JLabel e1=new JLabel(texto);
+        int posicion;
+        String eleccion=new String();
+        
+        do
+        {
+            eleccion=(String)JOptionPane.showInputDialog(panel,e1,titulo,JOptionPane.PLAIN_MESSAGE,null, 
+                                                                opc,opc[0]);   
+        }while(eleccion==null);
+        return eleccion;
+    }
+    /*************************************/
+    public static void salida(Vector<String> m,Vector<Date> fs)
+    {
+        String matricula=new String();
+        int i,opc;
+        
+        if(!(m.size()==0))
+        {
+        matricula=leerCadena("Matricula","Introducir matrícula");
+        i=buscarMatricula(m,matricula,fs);
+        if(i!=-1)
+        {
+            opc=confirmar("¿Salir del parking?");
+            if(opc==0) fs.set(i,new Date());
+        }
+        else aviso("Coche","El coche ya está fuera del parking");
+        }
+        else aviso("Coche","NO hay todavía ningún registro");
+    }
+    /****************************************/
+    public static int buscarMatricula(Vector<String> ma,String mat,Vector<Date> fSal)
+    {
+        int i;
+        
+        for(i=0;i<ma.size();i++)
+            if((ma.elementAt(i).compareTo(mat)==0) && 
+                    (fSal.elementAt(i)==null)) return i;
+        
+        return -1;
+    }
+    /*****************************************/
+     public static int confirmar(String mensaje)
+     {
+         JPanel panel=new JPanel();
+         JLabel label=new JLabel(mensaje);
+         String[] opciones={"Si","No"};
+         int opc;
+         panel.add(label);
+         
+         opc=JOptionPane.showOptionDialog(null, panel,"Confirmación",
+                   JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                   null, opciones, opciones[0]);
+         return opc;//Devolverá 0 o 1
+     }
+    /**********************************/
+    public static void aviso(String titulo,String texto)
+    {
+        JFrame frame=new JFrame();
+        JOptionPane.showMessageDialog(frame,texto,titulo,JOptionPane.WARNING_MESSAGE);
+    }
+    /****************************************/
+    public static String leerCadena(String titulo,String texto)
+    {
+        JFrame frame=new JFrame();
+        String aDevolver=new String();
+        
+        do
+        {
+            try
+            {
+            aDevolver=JOptionPane.showInputDialog(frame,texto,titulo,JOptionPane.QUESTION_MESSAGE);
+            if(aDevolver.isEmpty()) JOptionPane.showMessageDialog(frame,"Debe introducir un valor.","Campo vacío",
+                                                                 JOptionPane.WARNING_MESSAGE);
+            else break;
+            }catch(NullPointerException e)
+            {JOptionPane.showMessageDialog(frame,"Introduzca un valor.","Información",
+                                          JOptionPane.INFORMATION_MESSAGE);}
+        }while(true);
+        return aDevolver;
+    }//'' '' leerCadena
+    /*****************************************/
+  public static int contrasenia(Vector<String> n,Vector<String> c)
+  {
+   String usu;
+   String psswd;
+   char[] pass;
+   int posicion,opcion;
+
+   JPanel panel = new JPanel();//Declaramos interfaz gráfica
+   
+   JLabel img=new JLabel();
+  
+    img.setSize(50, 50);
+    img.setLocation(10, 10);
+    img.setIcon(new ImageIcon("parking.jpg"));
+        
+
+   JLabel etiqueta1 = new JLabel("Usuario : ");
+   JLabel etiqueta2 = new JLabel("Contraseña: ");//Declaramos etiquetas
+
+   JTextField usuario = new JTextField(10);//Declaramos campo de texto
+   JPasswordField password = new JPasswordField(10);//Declaramos campo de pswd
+      
+/*********pintamos la ventana*******/
+   panel.add(img);
+   panel.add(etiqueta1);
+   panel.add(usuario);
+   panel.add(etiqueta2);
+   panel.add(password);
+/***********************************/
+   String[] opciones = new String[]{"Aceptar", "Cancelar"}; //Botones
+   String titulo=new String();
+   titulo="Introducir Usuario y Password.";
+     
+      opcion = JOptionPane.showOptionDialog(null, panel,titulo,
+                   JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                   null, opciones, opciones[0]);
+
+      if(opcion == 0) // Al pulsar Aceptar...
+       {
+        usu = usuario.getText(); // Aqui tenemos el usuario metido
+        pass = password.getPassword(); //Aqui tenemos el password metido
+        psswd = new String(pass); //Pasamos a String el password
+        posicion=n.indexOf(usu);
+        if(posicion==-1) 
+        {
+            mostrarDatos("Usuario","Ese usuario no existe");
+            return -1;
+        }
+        else//Encuentra el user
+        {
+            if(c.elementAt(posicion).equals(psswd)) return(posicion);
+            else
+            {
+                mostrarDatos("Contraseña","No coincide la contraseña");
+                return -1;
+            }
+        }
+      }
+      return -1;
+    }
+    /*****************************************/
+    public static void mostrarDatos(String titulo,String texto)
+    {
+        JFrame frame=new JFrame();
+        JOptionPane.showMessageDialog(frame,texto,titulo,JOptionPane.INFORMATION_MESSAGE);
+    }
+    /*****************************************/
+    public static int menu(String titulo,String texto,String[] opc)
+    {
+        JPanel panel=new JPanel();
+        JLabel e1=new JLabel(texto);
+        int posicion;
+        String eleccion=new String();
+        
+        do
+        {
+            eleccion=(String)JOptionPane.showInputDialog(panel,e1,titulo,JOptionPane.PLAIN_MESSAGE,null, 
+                                                                opc,opc[0]);   
+        }while(eleccion==null);
+        posicion=conversion(eleccion,opc);
+        return posicion;
+    }
+    /************************************/
+    public static int conversion(String e,String[] opc)
+    {
+        int posicion;
+        
+        for(posicion=0;posicion<=opc.length;posicion++)
+            if(e.compareTo(opc[posicion])==0) break;  
+        
+        return posicion;
+    }
+    /******************************/
+    public static float leerFloat(String titulo,String texto)
+    {
+        JFrame frame=new JFrame();
+        String aDevolver=new String();
+        float res;
+        
+        do
+        {
+            try
+            {
+            aDevolver=JOptionPane.showInputDialog(frame,texto,titulo,JOptionPane.QUESTION_MESSAGE);
+            if(aDevolver.isEmpty()) JOptionPane.showMessageDialog(frame,"Debe introducir un valor.","Campo vacío",
+                                                                 JOptionPane.WARNING_MESSAGE);
+            else
+            {
+                res=Float.parseFloat(aDevolver);
+                break;
+            }
+            }catch(NullPointerException e)
+            {JOptionPane.showMessageDialog(frame,"Introduzca un valor.","Información",
+                                          JOptionPane.INFORMATION_MESSAGE);}
+        }while(true);
+        return res;
+    }
+    
+}
